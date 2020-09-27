@@ -2,9 +2,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/myshop?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
     username: root
-    password: 123456
+    password: sy1998-+
+    url: jdbc:mysql://47.97.192.128:3306/oauth?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true
     hikari:
       minimum-idle: 5
       idle-timeout: 600000
@@ -17,9 +17,9 @@ spring:
 
   redis:
     # 地址
-    host: 121.37.244.178
+    host: 47.97.192.128
     port: 6379
-    password: nanling098765
+    password: sy1998-+
     timeout: 10s
     lettuce:
       pool:
@@ -33,5 +33,21 @@ spring:
     # 设置json的时候给时区+8个小时
     time-zone: GMT+8
 
+
 server:
-  port: 9098
+  port: 9000
+
+#security:
+#  oauth2:
+#    client:
+#      client-id: entfrm
+#      client-secret: entfrm
+#      access-token-uri: http://localhost:9000/oauth/token
+#      user-authorization-uri: http://localhost:9000/oauth/authorize
+#    resource:
+#      token-info-uri: http://localhost:9000/oauth/check_token
+
+
+mybatis:
+  type-aliases-package: com.example.oauth2.domain
+  mapper-locations: classpath:mapper/**/*.xml
