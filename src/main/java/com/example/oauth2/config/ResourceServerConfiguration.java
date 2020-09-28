@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author sy
@@ -28,8 +27,12 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 // CRSF禁用，因为不使用session
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/oauth/**","/oauth/authorize","/login/**").permitAll()//开放的资源不用授权
+                //开放的资源不用授权
+                .antMatchers("/oauth/**","/login").permitAll()
                 .anyRequest().authenticated();
     }
+
+
+
 
 }

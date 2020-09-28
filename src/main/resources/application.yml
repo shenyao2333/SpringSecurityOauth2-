@@ -47,7 +47,6 @@ server:
 #    resource:
 #      token-info-uri: http://localhost:9000/oauth/check_token
 
-
 mybatis:
   type-aliases-package: com.example.oauth2.domain
   mapper-locations: classpath:mapper/**/*.xml
