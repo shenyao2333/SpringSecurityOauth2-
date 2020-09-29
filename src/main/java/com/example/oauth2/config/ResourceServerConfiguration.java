@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * @author sy
@@ -17,7 +18,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 @EnableResourceServer
 @AllArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter  {
+public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter  implements WebMvcConfigurer {
 
 
     @Override
@@ -26,10 +27,13 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         http
                 // CRSF禁用，因为不使用session
                 .csrf().disable()
+                .formLogin()
+                .and()
                 .authorizeRequests()
                 //开放的资源不用授权
-                .antMatchers("/oauth/**","/login").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers("/oauth/**").permitAll()
+                .anyRequest()
+                .authenticated();
     }
 
 

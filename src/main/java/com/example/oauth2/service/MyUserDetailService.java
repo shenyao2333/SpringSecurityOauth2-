@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,9 +19,9 @@ import java.util.Set;
  * @date Created in 2020.9.27 16:11
  * @description
  */
-@Configuration
 @AllArgsConstructor
 @Slf4j
+@Service
 public class MyUserDetailService implements UserDetailsService {
 
     private final TbUserService tbUserService;

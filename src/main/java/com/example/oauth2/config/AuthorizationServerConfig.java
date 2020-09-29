@@ -1,8 +1,10 @@
 package com.example.oauth2.config;
 
 
+import com.example.oauth2.service.MyUserDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +18,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
+import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
@@ -42,20 +46,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Resource
     private  DataSource dataSource;
 
+    @Resource
+    private MyUserDetailService userDetailService;
 
     /**
      * 密码认证
      */
     @Resource
     private AuthenticationManager authenticationManager;
-
-
-
-    @Bean
-    public ClientDetailsService jdbcClientDetails() {
-        // 基于 JDBC 实现，需要事先在数据库配置客户端信息
-        return new JdbcClientDetailsService(dataSource);
-    }
 
 
     @Bean
@@ -74,16 +72,22 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 //允许 GET、POST 请求获取 token，即访问端点：oauth/token
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
                 .tokenEnhancer(tokenEnhancer())
+                .userDetailsService(userDetailService)
+                .reuseRefreshTokens(true)
+
         ;
     }
+
+
 
     /**
      * token增强，添加oauth2默认返回的数据
      * @return
      */
-    private TokenEnhancer tokenEnhancer() {
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
         return (accessToken, authentication) -> {
-            UserDetails userDetails =(UserDetails) authentication.getUserAuthentication();
+            UserDetails userDetails =(UserDetails) authentication.getUserAuthentication().getPrincipal();
             Map<String, Object> info = new HashMap<>(1);
             info.put("userName", userDetails.getUsername());
             info.put("auths", userDetails.getAuthorities());
@@ -94,10 +98,17 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     }
 
+
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // 读取客户端配置
         clients.withClientDetails(jdbcClientDetails());
+    }
+    @Bean
+    public ClientDetailsService jdbcClientDetails() {
+        // 基于 JDBC 实现，需要事先在数据库配置客户端信息
+        return new JdbcClientDetailsService(dataSource);
     }
 
 
