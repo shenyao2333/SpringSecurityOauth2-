@@ -1,5 +1,6 @@
 package com.example.oauth2.config;
 
+import com.example.oauth2.filter.MyFilter;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -21,19 +23,28 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter  implements WebMvcConfigurer {
 
 
+    private final MyFilter filter;
+
+
     @Override
     @SneakyThrows
     public void configure(HttpSecurity http) {
         http
                 // CRSF禁用，因为不使用session
                 .csrf().disable()
+                //Basic登录
+                //.httpBasic()
+                //.and()
                 .formLogin()
                 .and()
                 .authorizeRequests()
                 //开放的资源不用授权
-                .antMatchers("/oauth/**").permitAll()
+                .antMatchers("/oauth/**","/login","/login-error").permitAll()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+                .and().addFilterAfter(filter, UsernamePasswordAuthenticationFilter.class)
+
+        ;
     }
 
 
