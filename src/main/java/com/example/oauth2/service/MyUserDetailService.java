@@ -37,7 +37,8 @@ public class MyUserDetailService implements UserDetailsService {
             throw new UsernameNotFoundException("账号或密码错误！");
         }
         Set<String> permissions = new HashSet<>();
-        permissions.add("ADMIN");
+        permissions.add("ROLE_ADMIN");
+        permissions.add("ROLE_ANONYMOUS");
 
         SeUser authUser = new SeUser(tbUser.getId(), tbUser.getUsername(), tbUser.getPassword(), true, true, true, true,
                 AuthorityUtils.createAuthorityList(permissions.toArray(new String[0])));

@@ -4,10 +4,12 @@ import com.example.oauth2.filter.MyFilter;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -20,10 +22,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableResourceServer
 @AllArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Order(6)
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter  implements WebMvcConfigurer {
 
 
     private final MyFilter filter;
+
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
 
     @Override
@@ -33,16 +38,18 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 // CRSF禁用，因为不使用session
                 .csrf().disable()
                 //Basic登录
-                //.httpBasic()
-                //.and()
+                .httpBasic()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
                 .formLogin()
                 .and()
                 .authorizeRequests()
                 //开放的资源不用授权
-                .antMatchers("/oauth/**","/login","/login-error").permitAll()
+                .antMatchers("/oauth/**","/login").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and().addFilterAfter(filter, UsernamePasswordAuthenticationFilter.class)
+
 
         ;
     }

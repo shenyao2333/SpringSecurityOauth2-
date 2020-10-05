@@ -1,6 +1,7 @@
 package com.example.oauth2.config;
 
 
+import com.example.oauth2.handler.MyWebResponseExceptionTranslator;
 import com.example.oauth2.service.MyUserDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -74,6 +75,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .tokenEnhancer(tokenEnhancer())
                 .userDetailsService(userDetailService)
                 .reuseRefreshTokens(true)
+                .exceptionTranslator(new MyWebResponseExceptionTranslator())
 
         ;
     }
@@ -92,7 +94,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
             info.put("userName", userDetails.getUsername());
             info.put("auths", userDetails.getAuthorities());
             info.put("license", "shenyao");
-            ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(info);
+            Map<String, Object> restMap = new HashMap<>();
+            restMap.put("code",0);
+            restMap.put("status",true);
+            restMap.put("message","登录成功");
+            restMap.put("data",info);
+            ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(restMap);
             return accessToken;
         };
 
